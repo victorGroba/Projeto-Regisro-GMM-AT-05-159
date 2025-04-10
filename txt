@@ -1,0 +1,3 @@
+📄 http://localhost:5000/historico/1 → apenas leitura
+🛠 http://localhost:5000/historico/1?admin=1 → mostra os botões para excluir registros
+📝 http://localhost:5000/verificar/1?admin=1 → permite escolher uma data retroativa

@@ -1,0 +1,86 @@
+<style>
+    .verificacao-container {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 30px;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        background-color: #fff;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .verificacao-container h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #1a73e8;
+        font-size: 1.5rem;
+    }
+
+    .verificacao-container label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    .verificacao-container input[type="text"],
+    .verificacao-container input[type="number"],
+    .verificacao-container input[type="date"] {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+        box-sizing: border-box;
+    }
+
+    .verificacao-container button {
+        width: 100%;
+        padding: 12px;
+        background-color: #1a73e8;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .verificacao-container button:hover {
+        background-color: #155cc4;
+    }
+
+    @media (max-width: 500px) {
+        .verificacao-container {
+            margin: 20px;
+            padding: 20px;
+        }
+
+        .verificacao-container h2 {
+            font-size: 1.2rem;
+        }
+    }
+</style>
+
+<div class="verificacao-container">
+    <h2>Verificação Diária da Balança</h2>
+    <form method="POST">
+        <label for="resultado_obtido">Resultado obtido:</label>
+        <input type="number" name="resultado_obtido" step="0.01" required>
+
+        {% if request.args.get('admin') == '1' %}
+            <label for="data">Data da verificação:</label>
+            <input type="date" name="data" required>
+        {% else %}
+            <input type="hidden" name="data" value="{{ now }}">
+        {% endif %}
+
+        <label for="responsavel">Responsável:</label>
+        <input type="text" name="responsavel" required>
+
+        <button type="submit">Salvar Verificação</button>
+    </form>
+</div>

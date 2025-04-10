@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>Controle de Verificação Diária das Balanças</h3>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Identificação</th>
+            <th>Modelo</th>
+            <th>Nº de Série</th>
+            <th>Validade Calibração</th>
+            <th>Última Verificação</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for b in balancas %}
+        <tr>
+            <td>{{ b.identificacao }}</td>
+            <td>{{ b.modelo }}</td>
+            <td>{{ b.numero_serie }}</td>
+            <td>{{ b.validade_calibracao }}</td>
+            <td>
+                {% if b.registros %}
+                    {{ b.registros[-1].data.strftime('%d/%m/%Y') }}
+                {% else %}
+                    Nenhuma
+                {% endif %}
+            </td>
+            <td>
+                {% if b.registros %}
+                    {{ b.registros[-1].status }}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('routes.verificar', id=b.id) }}" class="btn btn-outline-primary btn-sm">Verificar</a>
+                <a href="{{ url_for('routes.historico', id=b.id) }}" class="btn btn-outline-info btn-sm">Histórico</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ url_for('routes.cadastrar') }}" class="btn btn-primary">Cadastrar Nova Balança</a>
+{% endblock %}

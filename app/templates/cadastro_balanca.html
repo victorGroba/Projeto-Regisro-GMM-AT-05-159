@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>Cadastro de Nova Balança</h4>
+<form method="POST">
+    <div class="row mb-3">
+        <div class="col"><label>Identificação:</label><input class="form-control" name="identificacao"></div>
+        <div class="col"><label>Modelo:</label><input class="form-control" name="modelo"></div>
+        <div class="col"><label>Nº de Série:</label><input class="form-control" name="numero_serie"></div>
+    </div>
+    <div class="row mb-3">
+        <div class="col"><label>Validade Calibração:</label><input type="date" class="form-control" name="validade_calibracao"></div>
+        <div class="col"><label>Critério de Aceitação (Ex: ±0,05):</label><input class="form-control" name="criterio_aceitacao"></div>
+        <div class="col"><label>Padrão:</label><input class="form-control" name="padrao"></div>
+    </div>
+    <div class="row mb-3">
+        <div class="col"><label>Valor Convencional:</label><input type="number" step="0.01" class="form-control" name="valor_convencional"></div>
+        <div class="col"><label>Nº do Certificado:</label><input class="form-control" name="numero_certificado"></div>
+        <div class="col"><label>Fabricante:</label><input class="form-control" name="fabricante"></div>
+        <div class="col"><label>Validade do Padrão:</label><input type="date" class="form-control" name="validade_padrao"></div>
+    </div>
+    <button type="submit" class="btn btn-primary">Cadastrar</button>
+</form>
+{% endblock %}

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificação Diária das Balanças - {{ balanca.identificacao }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .logo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .company-name {
+            text-align: left;
+        }
+        .company-name h2 {
+            margin: 0;
+            color: #555;
+            font-weight: bold;
+        }
+        .company-name p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #777;
+        }
+        .system-title {
+            text-align: right;
+            color: #1a73e8;
+            font-weight: bold;
+        }
+        .system-title h1 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .title-header {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border: 1px solid black;
+            margin-bottom: 15px;
+        }
+        .title-header > div {
+            padding: 10px;
+            text-align: center;
+        }
+        .title-header h3 {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        .title-header p {
+            margin: 5px 0 0;
+            font-weight: bold;
+        }
+        .title-header .blue-text {
+            color: #1a73e8;
+        }
+        .title-section {
+            border-right: 1px solid black;
+        }
+        .id-section {
+            border-right: 1px solid black;
+        }
+        .revision-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .revision-section > div:first-child {
+            border-right: 1px solid black;
+        }
+        .revision-section .date-section {
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+        }
+        .revision-section .date-section .approved {
+            border-bottom: 1px solid black;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .print-button, .back-button {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 8px 15px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            color: #333;
+            margin-right: 10px;
+        }
+        .print-button:hover, .back-button:hover {
+            background-color: #f5f5f5;
+        }
+        .actions {
+            margin-bottom: 15px;
+        }
+        @media print {
+            .actions {
+                display: none;
+            }
+            body {
+                margin: 0;
+            }
+            .container {
+                border: none;
+                box-shadow: none;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="actions">
+            <a href="{{ url_for('routes.index') }}" class="back-button">← Voltar</a>
+            <button onclick="window.print()" class="print-button">🖨 Imprimir</button>
+            <a href="{{ url_for('routes.exportar_excel', id=balanca.id) }}" class="print-button">📥 Exportar para Excel</a>
+        </div>
+
+        <div class="logo-header">
+            <div class="company-name">
+                <h2>Mattos&Mattos</h2>
+                <p>LABORATÓRIOS</p>
+            </div>
+            <div class="system-title">
+                <h1>SISTEMA DA GESTÃO DE</h1>
+                <h1>QUALIDADE</h1>
+            </div>
+        </div>
+
+        <div class="title-header">
+            <div class="title-section">
+                <h3>Título</h3>
+                <p class="blue-text">VERIFICAÇÃO DIÁRIA DAS BALANÇAS</p>
+            </div>
+            <div class="id-section">
+                <h3>Identificação</h3>
+                <p class="blue-text">GMM-05-AT-159</p>
+            </div>
+            <div class="revision-section">
+                <div>
+                    <h3>Revisão</h3>
+                    <p class="blue-text">01</p>
+                </div>
+                <div class="date-section">
+                    <div class="approved">
+                        <h3 style="font-size: 0.8rem;">Aprovado em</h3>
+                        <p class="blue-text" style="font-size: 0.8rem;">28/06/2016</p>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 0.8rem;">Página</h3>
+                        <p class="blue-text" style="font-size: 0.8rem;">1/1</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Identificação da balança</th>
+                    <th>Modelo</th>
+                    <th>Número de série</th>
+                    <th>Validade da calibração</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ balanca.identificacao }}</td>
+                    <td>{{ balanca.modelo }}</td>
+                    <td>{{ balanca.numero_serie }}</td>
+                    <td>{{ balanca.validade_calibracao }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="5">Critério de Aceitação: ± {{ balanca.criterio_aceitacao }}</th>
+                </tr>
+                <tr>
+                    <th>Padrão</th>
+                    <th>Valor convencional do Peso Padrão</th>
+                    <th>Nº do Certificado</th>
+                    <th>Fabricante</th>
+                    <th>Validade da calibração</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ balanca.padrao }}</td>
+                    <td>{{ balanca.valor_convencional }}</td>
+                    <td>{{ balanca.numero_certificado }}</td>
+                    <td>{{ balanca.fabricante }}</td>
+                    <td>{{ balanca.validade_padrao }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Valor Convencional do Padrão</th>
+                    <th>Resultado obtido</th>
+                    <th>Diferença</th>
+                    <th>Status</th>
+                    <th>Responsável</th>
+                    {% if request.args.get('admin') == '1' %}
+                    <th>Ações</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in registros %}
+                <tr>
+                    <td>{{ r.data.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ balanca.valor_convencional }}</td>
+                    <td>{{ r.resultado_obtido }}</td>
+                    <td>{{ "%.4f"|format(r.diferenca) }}</td>
+                    <td>{{ r.status }}</td>
+                    <td>{{ r.responsavel }}</td>
+                    {% if request.args.get('admin') == '1' %}
+                    <td>
+                        <form method="POST" action="{{ url_for('routes.excluir_registro', id=r.id, balanca_id=balanca.id) }}" onsubmit="return confirm('Excluir este registro?');">
+                            <button type="submit" class="btn btn-danger btn-sm">🗑</button>
+                        </form>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7">Nenhum registro encontrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
