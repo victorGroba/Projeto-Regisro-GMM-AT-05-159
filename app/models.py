@@ -33,3 +33,7 @@ class RegistroDiario(db.Model):
     def status(self):
         criterio = float(self.balanca.criterio_aceitacao.replace("±", "").replace(",", "."))
         return "Conforme" if self.diferenca <= criterio else "Não Conforme"
+
+
+   
+   
