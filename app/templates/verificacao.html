@@ -69,9 +69,9 @@
     <h2>Verificação Diária da Balança</h2>
     <form method="POST">
         <label for="resultado_obtido">Resultado obtido:</label>
-        <input type="number" name="resultado_obtido" step="0.01" required>
+        <input type="number" name="resultado_obtido" step="0.0001" required>
 
-        {% if request.args.get('admin') == '1' %}
+        {% if current_user.is_authenticated %}
             <label for="data">Data da verificação:</label>
             <input type="date" name="data" required>
         {% else %}

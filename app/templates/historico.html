@@ -133,8 +133,6 @@
                 padding: 0;
             }
         }
-
-        
     </style>
 </head>
 <body>
@@ -235,7 +233,7 @@
                     <th>Diferença</th>
                     <th>Status</th>
                     <th>Responsável</th>
-                    {% if request.args.get('admin') == '1' %}
+                    {% if current_user.is_authenticated %}
                     <th>Ações</th>
                     {% endif %}
                 </tr>
@@ -249,7 +247,7 @@
                     <td>{{ "%.4f"|format(r.diferenca) }}</td>
                     <td>{{ r.status }}</td>
                     <td>{{ r.responsavel }}</td>
-                    {% if request.args.get('admin') == '1' %}
+                    {% if current_user.is_authenticated %}
                     <td>
                         <form method="POST" action="{{ url_for('routes.excluir_registro', id=r.id, balanca_id=balanca.id) }}" onsubmit="return confirm('Excluir este registro?');">
                             <button type="submit" class="btn btn-danger btn-sm">🗑</button>

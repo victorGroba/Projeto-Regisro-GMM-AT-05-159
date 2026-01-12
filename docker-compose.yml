@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  app-balancas:
+    build: .
+    container_name: gmm_balancas
+    restart: always
+    ports:
+      - "5005:5005"
+    volumes:
+      # Mapeia a pasta local 'instance' para dentro do container
+      # Isso mantem seu banco de dados seguro e persistente
+      - ./instance:/app/instance
+    environment:
+      - SECRET_KEY=defina_uma_senha_dificil_aqui
