@@ -33,19 +33,18 @@ class RegistroDiario(db.Model):
 
     @property
     def status(self):
-        # Remove caracteres especiais para conversão
         criterio_limpo = self.balanca.criterio_aceitacao.replace("±", "").replace(",", ".")
         try:
             criterio = float(criterio_limpo)
         except ValueError:
-            criterio = 0.05 # Valor padrão em caso de erro
-            
+            criterio = 0.05
         return "Conforme" if self.diferenca <= criterio else "Não Conforme"
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
+    is_admin = db.Column(db.Boolean, default=False) # Novo campo para controle total
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

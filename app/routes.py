@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file
+from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from .models import db, Balanca, RegistroDiario, User
 from io import BytesIO
@@ -7,7 +7,7 @@ from datetime import datetime, date
 
 routes_bp = Blueprint('routes', __name__)
 
-# --- Rotas de Autenticação ---
+# --- Autenticação ---
 
 @routes_bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -17,7 +17,6 @@ def login():
     if request.method == "POST":
         username = request.form.get('username')
         password = request.form.get('password')
-        
         user = User.query.filter_by(username=username).first()
         
         if user and user.check_password(password):
@@ -32,25 +31,70 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash("Você saiu do sistema.", "info")
+    flash("Sessão encerrada.", "info")
     return redirect(url_for('routes.login'))
 
-# --- Rotas do Sistema ---
+# --- Gestão de Usuários (Apenas Admin) ---
+
+@routes_bp.route("/usuarios", methods=["GET", "POST"])
+@login_required
+def usuarios():
+    if not current_user.is_admin:
+        flash("Acesso não autorizado.", "danger")
+        return redirect(url_for('routes.index'))
+
+    if request.method == "POST":
+        novo_user = request.form.get('username')
+        nova_senha = request.form.get('password')
+        eh_admin = True if request.form.get('is_admin') else False
+
+        if User.query.filter_by(username=novo_user).first():
+            flash("Usuário já existe.", "warning")
+        else:
+            u = User(username=novo_user, is_admin=eh_admin)
+            u.set_password(nova_senha)
+            db.session.add(u)
+            db.session.commit()
+            flash(f"Usuário {novo_user} criado com sucesso!", "success")
+        return redirect(url_for('routes.usuarios'))
+
+    todos_usuarios = User.query.all()
+    return render_template("usuarios.html", usuarios=todos_usuarios, title="Gerenciar Usuários")
+
+@routes_bp.route("/excluir_usuario/<int:user_id>", methods=["POST"])
+@login_required
+def excluir_usuario(user_id):
+    if not current_user.is_admin:
+        abort(403)
+    
+    user_to_delete = User.query.get_or_404(user_id)
+    if user_to_delete.id == current_user.id:
+        flash("Você não pode excluir a si mesmo.", "warning")
+    else:
+        db.session.delete(user_to_delete)
+        db.session.commit()
+        flash("Usuário removido.", "success")
+    return redirect(url_for('routes.usuarios'))
+
+# --- Rotas Principais ---
 
 @routes_bp.route("/")
 @login_required
 def index():
     balancas = Balanca.query.all()
-    return render_template("index.html", title="Balanças", balancas=balancas)
+    return render_template("index.html", title="Dashboard", balancas=balancas)
 
 @routes_bp.route("/cadastrar", methods=["GET", "POST"])
 @login_required
 def cadastrar():
+    # Apenas admin cadastra novas balanças? Se sim, descomente a linha abaixo:
+    # if not current_user.is_admin: abort(403)
+    
     if request.method == "POST":
         dados = request.form
         existente = Balanca.query.filter_by(identificacao=dados['identificacao']).first()
         if existente:
-            flash("Erro: já existe uma balança com essa identificação.", "danger")
+            flash("Erro: Identificação já existe.", "danger")
             return redirect(url_for("routes.cadastrar"))
 
         nova = Balanca(
@@ -67,9 +111,9 @@ def cadastrar():
         )
         db.session.add(nova)
         db.session.commit()
-        flash("Balança cadastrada com sucesso!", "success")
+        flash("Balança cadastrada!", "success")
         return redirect(url_for("routes.index"))
-    return render_template("cadastro_balanca.html", title="Cadastro de Balança")
+    return render_template("cadastro_balanca.html", title="Nova Balança")
 
 @routes_bp.route("/verificar/<int:id>", methods=["GET", "POST"])
 @login_required
@@ -79,10 +123,10 @@ def verificar(id):
         resultado = float(request.form['resultado_obtido'])
         responsavel = request.form['responsavel']
         
-        # Se for admin (logado), pode editar a data, senão usa hoje
-        data_str = request.form.get('data')
-        if data_str:
-            data = datetime.strptime(data_str, "%Y-%m-%d").date()
+        # LÓGICA DE DATA:
+        # Se for admin e enviou data, usa ela. Senão, usa hoje.
+        if current_user.is_admin and request.form.get('data'):
+            data = datetime.strptime(request.form['data'], "%Y-%m-%d").date()
         else:
             data = date.today()
 
@@ -94,7 +138,7 @@ def verificar(id):
         )
         db.session.add(novo_registro)
         db.session.commit()
-        flash(f"Verificação registrada com sucesso!", "success")
+        flash("Verificação salva!", "success")
         return redirect(url_for('routes.index'))
     return render_template("verificacao.html", balanca=balanca, now=date.today().strftime('%Y-%m-%d'))
 
@@ -113,16 +157,8 @@ def exportar_excel(id):
 
     wb = Workbook()
     ws = wb.active
-    ws.title = "Histórico de Verificações"
-
-    ws.append([
-        "Data",
-        "Valor Convencional do Padrão",
-        "Resultado Obtido",
-        "Diferença",
-        "Status",
-        "Responsável"
-    ])
+    ws.title = "Historico"
+    ws.append(["Data", "Padrão", "Obtido", "Diferença", "Status", "Responsável"])
 
     for r in registros:
         ws.append([
@@ -137,14 +173,19 @@ def exportar_excel(id):
     output = BytesIO()
     wb.save(output)
     output.seek(0)
-    filename = f"historico_{balanca.identificacao}.xlsx"
+    filename = f"Historico_{balanca.identificacao}.xlsx"
     return send_file(output, download_name=filename, as_attachment=True, mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 @routes_bp.route("/excluir_registro/<int:id>/<int:balanca_id>", methods=["POST"])
 @login_required
 def excluir_registro(id, balanca_id):
+    # Proteção no Back-end: Apenas Admin pode excluir
+    if not current_user.is_admin:
+        flash("Apenas administradores podem excluir registros.", "danger")
+        return redirect(url_for("routes.historico", id=balanca_id))
+        
     registro = RegistroDiario.query.get_or_404(id)
     db.session.delete(registro)
     db.session.commit()
-    flash("Registro excluído com sucesso.", "success")
+    flash("Registro excluído.", "success")
     return redirect(url_for("routes.historico", id=balanca_id))

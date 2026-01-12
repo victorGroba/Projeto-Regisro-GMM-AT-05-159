@@ -1,86 +1,39 @@
 <style>
     .verificacao-container {
         max-width: 600px;
-        margin: 40px auto;
-        padding: 30px;
-        border: 1px solid #ddd;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin: 0 auto;
+        padding: 40px;
+        border-radius: 15px;
         background-color: #fff;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     }
-
-    .verificacao-container h2 {
-        text-align: center;
-        margin-bottom: 25px;
-        color: #1a73e8;
-        font-size: 1.5rem;
-    }
-
-    .verificacao-container label {
-        font-weight: 600;
-        display: block;
-        margin-bottom: 5px;
-        color: #333;
-    }
-
-    .verificacao-container input[type="text"],
-    .verificacao-container input[type="number"],
-    .verificacao-container input[type="date"] {
-        width: 100%;
-        padding: 12px;
-        margin-bottom: 20px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        font-size: 1rem;
-        box-sizing: border-box;
-    }
-
-    .verificacao-container button {
-        width: 100%;
-        padding: 12px;
-        background-color: #1a73e8;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: bold;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background-color 0.2s ease-in-out;
-    }
-
-    .verificacao-container button:hover {
-        background-color: #155cc4;
-    }
-
-    @media (max-width: 500px) {
-        .verificacao-container {
-            margin: 20px;
-            padding: 20px;
-        }
-
-        .verificacao-container h2 {
-            font-size: 1.2rem;
-        }
-    }
+    label { font-weight: 600; color: #555; margin-bottom: 5px; display: block; }
+    input { width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 8px; margin-bottom: 20px; }
+    button { width: 100%; padding: 12px; background-color: #0d6efd; color: white; border: none; border-radius: 8px; font-weight: bold; }
+    button:hover { background-color: #0b5ed7; }
 </style>
 
 <div class="verificacao-container">
-    <h2>Verificação Diária da Balança</h2>
+    <h3 class="text-center mb-4 text-primary">Nova Verificação</h3>
     <form method="POST">
-        <label for="resultado_obtido">Resultado obtido:</label>
-        <input type="number" name="resultado_obtido" step="0.0001" required>
+        <label>Resultado obtido (g)</label>
+        <input type="number" name="resultado_obtido" step="0.0001" placeholder="Ex: 100.005" required>
 
-        {% if current_user.is_authenticated %}
-            <label for="data">Data da verificação:</label>
+        {% if current_user.is_admin %}
+            <label class="text-danger">Data da Verificação (Modo Admin)</label>
             <input type="date" name="data" required>
         {% else %}
+            <div class="alert alert-light border text-center mb-3">
+                <small class="text-muted">Data do registro:</small><br>
+                <strong>{{ now|replace('-', '/') }} (Hoje)</strong>
+            </div>
             <input type="hidden" name="data" value="{{ now }}">
         {% endif %}
 
-        <label for="responsavel">Responsável:</label>
-        <input type="text" name="responsavel" required>
+        <label>Responsável</label>
+        <input type="text" name="responsavel" value="{{ current_user.username }}" readonly style="background-color: #e9ecef;">
 
         <button type="submit">Salvar Verificação</button>
+        <a href="{{ url_for('routes.index') }}" class="d-block text-center mt-3 text-decoration-none text-muted">Cancelar</a>
     </form>
 </div>
