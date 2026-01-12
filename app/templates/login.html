@@ -1,28 +1,31 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
-    <div class="card shadow p-4" style="max-width: 400px; width: 100%;">
-        <div class="text-center mb-4">
-            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="height: 60px;">
-            <h4 class="mt-3">Acesso ao Sistema</h4>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-5 col-lg-4">
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex bg-primary bg-opacity-10 p-3 rounded-circle text-primary mb-3">
+                        <i class="bi bi-fingerprint fs-2"></i>
+                    </div>
+                    <h4 class="fw-bold">Bem-vindo</h4>
+                    <p class="text-muted">Acesse o sistema de qualidade</p>
+                </div>
+                
+                <form method="POST">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="username" class="form-control" id="floatingInput" placeholder="Usuário" required autofocus>
+                        <label for="floatingInput">Usuário</label>
+                    </div>
+                    <div class="form-floating mb-4">
+                        <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Senha" required>
+                        <label for="floatingPassword">Senha</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-3">Entrar</button>
+                </form>
+            </div>
         </div>
-        <form method="POST">
-            <div class="mb-3">
-                <label class="form-label fw-bold">Usuário</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
-                    <input type="text" name="username" class="form-control" placeholder="Digite seu usuário" required autofocus>
-                </div>
-            </div>
-            <div class="mb-4">
-                <label class="form-label fw-bold">Senha</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
-                    <input type="password" name="password" class="form-control" placeholder="Digite sua senha" required>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Entrar</button>
-        </form>
     </div>
 </div>
 {% endblock %}

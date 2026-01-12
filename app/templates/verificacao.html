@@ -1,39 +1,67 @@
-<style>
-    .verificacao-container {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 40px;
-        border-radius: 15px;
-        background-color: #fff;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
-    label { font-weight: 600; color: #555; margin-bottom: 5px; display: block; }
-    input { width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 8px; margin-bottom: 20px; }
-    button { width: 100%; padding: 12px; background-color: #0d6efd; color: white; border: none; border-radius: 8px; font-weight: bold; }
-    button:hover { background-color: #0b5ed7; }
-</style>
+{% extends "base.html" %}
 
-<div class="verificacao-container">
-    <h3 class="text-center mb-4 text-primary">Nova Verificação</h3>
-    <form method="POST">
-        <label>Resultado obtido (g)</label>
-        <input type="number" name="resultado_obtido" step="0.0001" placeholder="Ex: 100.005" required>
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        
+        <a href="{{ url_for('routes.index') }}" class="text-decoration-none text-muted mb-3 d-inline-flex align-items-center small">
+            <i class="bi bi-arrow-left me-1"></i> Voltar ao Painel
+        </a>
 
-        {% if current_user.is_admin %}
-            <label class="text-danger">Data da Verificação (Modo Admin)</label>
-            <input type="date" name="data" required>
-        {% else %}
-            <div class="alert alert-light border text-center mb-3">
-                <small class="text-muted">Data do registro:</small><br>
-                <strong>{{ now|replace('-', '/') }} (Hoje)</strong>
+        <div class="card shadow border-0 overflow-hidden">
+            <div class="card-header bg-white border-bottom pt-4 pb-3 px-4">
+                <h5 class="fw-bold mb-0">Nova Verificação</h5>
+                <small class="text-muted">Equipamento: {{ balanca.identificacao }}</small>
             </div>
-            <input type="hidden" name="data" value="{{ now }}">
-        {% endif %}
+            
+            <div class="card-body p-4">
+                <form method="POST">
+                    
+                    <div class="mb-4">
+                        <label class="form-label text-secondary small fw-bold text-uppercase">Resultado Obtido</label>
+                        <div class="input-group input-group-lg border rounded-3 overflow-hidden">
+                            <input type="number" step="0.0001" name="resultado_obtido" class="form-control border-0 fw-bold text-primary fs-4" placeholder="0.0000" required autofocus>
+                            <span class="input-group-text border-0 bg-light text-muted">gramas</span>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2 px-1">
+                            <small class="text-muted">Valor de Referência:</small>
+                            <small class="fw-bold text-dark">{{ balanca.valor_convencional }}g</small>
+                        </div>
+                    </div>
 
-        <label>Responsável</label>
-        <input type="text" name="responsavel" value="{{ current_user.username }}" readonly style="background-color: #e9ecef;">
+                    <div class="mb-4">
+                        {% if current_user.is_admin %}
+                            <label class="form-label text-danger small fw-bold text-uppercase d-flex justify-content-between">
+                                <span>Data da Verificação</span>
+                                <span class="badge bg-danger bg-opacity-10 text-danger">Modo Admin</span>
+                            </label>
+                            <input type="date" name="data" class="form-control form-control-lg bg-danger bg-opacity-10 border-danger border-opacity-25 text-danger fw-bold">
+                        {% else %}
+                            <div class="p-3 bg-light rounded-3 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="d-block text-muted small fw-bold text-uppercase">Data do Registro</span>
+                                    <span class="fs-5 fw-bold text-dark">{{ now|replace('-', '/') }}</span>
+                                </div>
+                                <i class="bi bi-calendar2-check text-success fs-3"></i>
+                            </div>
+                            <input type="hidden" name="data" value="{{ now }}">
+                        {% endif %}
+                    </div>
 
-        <button type="submit">Salvar Verificação</button>
-        <a href="{{ url_for('routes.index') }}" class="d-block text-center mt-3 text-decoration-none text-muted">Cancelar</a>
-    </form>
+                    <div class="mb-4">
+                        <label class="form-label text-secondary small fw-bold text-uppercase">Responsável Técnico</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
+                            <input type="text" name="responsavel" value="{{ current_user.username }}" class="form-control bg-light border-start-0" readonly>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-3 fs-5 fw-bold shadow-sm">
+                        Confirmar Verificação
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}

@@ -1,63 +1,76 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="row">
-    <div class="col-md-4">
-        <div class="card p-4">
-            <h5 class="mb-3">Novo Usuário</h5>
-            <form method="POST">
-                <div class="mb-3">
-                    <label class="form-label">Nome de Usuário</label>
-                    <input type="text" name="username" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Senha</label>
-                    <input type="password" name="password" class="form-control" required>
-                </div>
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" name="is_admin" id="adminCheck">
-                    <label class="form-check-label" for="adminCheck">
-                        É Administrador?
-                    </label>
-                    <div class="form-text">Admins podem apagar registros e usar data retroativa.</div>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Criar Usuário</button>
-            </form>
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-4">Adicionar Usuário</h5>
+                <form method="POST">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="username" class="form-control" id="userInput" placeholder="Usuário" required>
+                        <label for="userInput">Nome de Usuário</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" name="password" class="form-control" id="passInput" placeholder="Senha" required>
+                        <label for="passInput">Senha</label>
+                    </div>
+                    
+                    <div class="bg-light p-3 rounded-3 mb-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="is_admin" id="adminCheck">
+                            <label class="form-check-label fw-bold" for="adminCheck">Acesso Administrador</label>
+                        </div>
+                        <small class="text-muted mt-2 d-block" style="font-size: 0.8rem;">
+                            Permite excluir registros e alterar datas retroativas.
+                        </small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Criar Conta</button>
+                </form>
+            </div>
         </div>
     </div>
 
-    <div class="col-md-8">
-        <div class="card p-4">
-            <h5 class="mb-3">Usuários Cadastrados</h5>
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Usuário</th>
-                        <th>Função</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for u in usuarios %}
-                    <tr>
-                        <td>{{ u.username }}</td>
-                        <td>
-                            {% if u.is_admin %}
-                                <span class="badge bg-primary">Admin</span>
-                            {% else %}
-                                <span class="badge bg-secondary">Comum</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if u.id != current_user.id %}
-                            <form method="POST" action="{{ url_for('routes.excluir_usuario', user_id=u.id) }}" onsubmit="return confirm('Tem certeza?');">
-                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                            </form>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="fw-bold mb-0">Equipe Cadastrada</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 py-3 text-uppercase small text-secondary">Usuário</th>
+                            <th class="py-3 text-uppercase small text-secondary">Perfil</th>
+                            <th class="pe-4 py-3 text-uppercase small text-secondary text-end">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in usuarios %}
+                        <tr>
+                            <td class="ps-4 fw-bold text-dark">{{ u.username }}</td>
+                            <td>
+                                {% if u.is_admin %}
+                                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10">Administrador</span>
+                                {% else %}
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-10">Colaborador</span>
+                                {% endif %}
+                            </td>
+                            <td class="pe-4 text-end">
+                                {% if u.id != current_user.id %}
+                                <form method="POST" action="{{ url_for('routes.excluir_usuario', user_id=u.id) }}" onsubmit="return confirm('Remover acesso de {{ u.username }}?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
